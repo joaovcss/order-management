@@ -1,20 +1,5 @@
 package com.yonix.order_management.dto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.UUID;
 
-@Getter
-@Setter
-public class OrderItemRequest {
-
-    @NotNull
-    private UUID productId;
-
-    @NotNull
-    @Min(1)
-    private Integer quantity;
-}
+public record OrderItemRequest (UUID productId, Integer quantity){}
