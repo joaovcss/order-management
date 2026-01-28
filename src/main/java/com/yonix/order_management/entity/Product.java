@@ -1,6 +1,7 @@
 package com.yonix.order_management.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,10 +21,12 @@ public class Product {
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @NotNull
     private String name;
 
     private String description;
 
+    @NotNull
     private BigDecimal price;
 
     private Integer stock;
