@@ -1,5 +1,7 @@
 package com.yonix.order_management.controller;
 
+import com.yonix.order_management.dto.request.CreateUserRequest;
+import com.yonix.order_management.dto.response.UserResponse;
 import com.yonix.order_management.entity.User;
 import com.yonix.order_management.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -26,10 +28,15 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> create(@RequestBody User userData){
-        User user = userService.save(userData);
+    public ResponseEntity<UserResponse> create(@RequestBody CreateUserRequest userData){
+        User user = new User(null, userData.name(), null);
+        User saved = userService.save(user);
+        UserResponse userResponse = new UserResponse(
+                saved.getId(),
+                saved.getName()
+        );
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(user);
+                .body(userResponse);
     }
 
     @DeleteMapping("/{id}")

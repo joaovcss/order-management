@@ -1,5 +1,7 @@
 package com.yonix.order_management.controller;
 
+import com.yonix.order_management.dto.request.CreateProductRequest;
+import com.yonix.order_management.dto.response.ProductResponse;
 import com.yonix.order_management.entity.Product;
 import com.yonix.order_management.service.ProductService;
 import org.springframework.http.HttpStatus;
@@ -32,10 +34,17 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Product> create(@RequestBody Product productData){
-        Product product = productService.createProduct(productData);
+    public ResponseEntity<ProductResponse> create(@RequestBody CreateProductRequest request){
+        Product product = new Product(null, request.name(), request.description(), request.price(), request.stock());
+        Product newProduct = productService.createProduct(product);
+        ProductResponse productResponse = new ProductResponse(
+                newProduct.getId(),
+                newProduct.getName(),
+                newProduct.getDescription(),
+                newProduct.getPrice()
+        );
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(product);
+                .body(productResponse);
     }
 
     @DeleteMapping("/{id}")
