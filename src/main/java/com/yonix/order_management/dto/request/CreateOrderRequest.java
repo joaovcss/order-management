@@ -1,4 +1,4 @@
-package com.yonix.order_management.dto;
+package com.yonix.order_management.dto.request;
 
 import java.util.List;
 import java.util.UUID;
