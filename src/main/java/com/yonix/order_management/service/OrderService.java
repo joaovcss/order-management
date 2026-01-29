@@ -1,6 +1,6 @@
 package com.yonix.order_management.service;
 
-import com.yonix.order_management.dto.OrderItemRequest;
+import com.yonix.order_management.dto.request.OrderItemRequest;
 import com.yonix.order_management.entity.*;
 import com.yonix.order_management.repository.OrderRepository;
 import com.yonix.order_management.repository.ProductRepository;
@@ -46,8 +46,8 @@ public class OrderService {
         BigDecimal totalPrice = BigDecimal.ZERO;
 
         for (OrderItemRequest item : items) {
-            UUID productId = item.getProductId();
-            Integer quantity = item.getQuantity();
+            UUID productId = item.productId();
+            Integer quantity = item.quantity();
 
             Product product = productRepository.findById(productId)
                     .orElseThrow(() -> new RuntimeException("product not found"));
