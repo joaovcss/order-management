@@ -1,11 +1,9 @@
 package com.yonix.order_management.controller;
 
+import com.yonix.order_management.dto.mapper.OrderMapper;
 import com.yonix.order_management.dto.request.CreateOrderRequest;
-import com.yonix.order_management.dto.request.OrderItemRequest;
-import com.yonix.order_management.dto.response.OrderItemResponse;
 import com.yonix.order_management.dto.response.OrderResponse;
 import com.yonix.order_management.entity.Order;
-import com.yonix.order_management.entity.OrderItem;
 import com.yonix.order_management.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +24,8 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Order>> findAll(){
-        List<Order> orders = orderService.findAll();
+    public ResponseEntity<List<OrderResponse>> findAll(){
+        List<OrderResponse> orders = orderService.findAll();
         return ResponseEntity.ok(orders);
     }
 
@@ -40,25 +38,13 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<OrderResponse> create(@RequestBody CreateOrderRequest request){
         Order saved = orderService.createOrder(request.userId(), request.items());
-
-        List<OrderItemResponse> items = saved.getItems().stream()
-                .map(item -> new OrderItemResponse(
-                        item.getProduct().getId(),
-                        item.getProduct().getName(),
-                        item.getQuantity(),
-                        item.getUnitPrice(),
-                        item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity()))
-                ))
-                .toList();
-
-        OrderResponse orderResponse = new OrderResponse(
-                saved.getId(),
-                saved.getUser().getId(),
-                items,
-                saved.getStatus(),
-                saved.getTotal()
-        );
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(orderResponse);
+                .body(OrderMapper.toResponse(saved));
+    }
+
+    @PatchMapping("/cancel/{orderId}")
+    public ResponseEntity<OrderResponse> cancelOrder(@PathVariable UUID orderId){
+        Order order = orderService.cancelOrder(orderId);
+        return ResponseEntity.ok(OrderMapper.toResponse(order));
     }
 }

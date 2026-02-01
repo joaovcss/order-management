@@ -1,6 +1,8 @@
 package com.yonix.order_management.service;
 
+import com.yonix.order_management.dto.mapper.OrderMapper;
 import com.yonix.order_management.dto.request.OrderItemRequest;
+import com.yonix.order_management.dto.response.OrderResponse;
 import com.yonix.order_management.entity.*;
 import com.yonix.order_management.repository.OrderRepository;
 import com.yonix.order_management.repository.ProductRepository;
@@ -25,8 +27,11 @@ public class OrderService {
         this.userRepository = userRepository;
     }
 
-    public List<Order> findAll(){
-        return orderRepository.findAll();
+    public List<OrderResponse> findAll(){
+        return orderRepository.findAllOrders()
+                .stream()
+                .map(OrderMapper::toResponse)
+                .toList();
     }
 
     public Order findById(UUID id){
