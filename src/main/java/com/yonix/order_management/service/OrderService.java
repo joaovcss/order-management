@@ -88,16 +88,16 @@ public class OrderService {
                 .orElseThrow(() -> new RuntimeException("order not found"));
 
         if(order.getStatus().equals(OrderStatus.SHIPPED)){
-            throw new RuntimeException("cannot cancel an order that already has been shipped");
+            throw new OrderShippedException("cannot cancel an order that already has been shipped");
         }
         if(order.getStatus().equals(OrderStatus.CANCELED)){
-            throw new RuntimeException("cannot cancel an order that already has been cancelled");
+            throw new OrderCancelledException("cannot cancel an order that already has been cancelled");
         }
         if(order.getStatus().equals(OrderStatus.PAID)){
-            throw new RuntimeException("cannot cancel an order that already has been paid");
+            throw new OrderPaidException("cannot cancel an order that already has been paid");
         }
         if(order.getStatus().equals(OrderStatus.DELIVERED)){
-            throw new RuntimeException("cannot cancel an order that already has been delivered");
+            throw new OrderDeliveredException("cannot cancel an order that already has been delivered");
         }
 
         order.setStatus(OrderStatus.CANCELED);
@@ -126,7 +126,39 @@ public class OrderService {
             throw new OrderDeliveredException("cannot pay an order that already has been delivered");
         }
         order.setStatus(OrderStatus.PAID);
-        return order;
+        return orderRepository.save(order);
+    }
+
+    public Order sendOrder(UUID orderId){
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("order not found"));
+        if(order.getStatus().equals(OrderStatus.CANCELED)){
+            throw new OrderCancelledException("cannot send an order that already has been cancelled");
+        }
+        if(order.getStatus().equals(OrderStatus.SHIPPED)){
+            throw new OrderShippedException("cannot send an order that already has been shipped");
+        }
+        if(order.getStatus().equals(OrderStatus.DELIVERED)){
+            throw new OrderDeliveredException("cannot send an order that already has been delivered");
+        }
+        order.setStatus(OrderStatus.SHIPPED);
+        return orderRepository.save(order);
+    }
+
+    public Order deliverOrder(UUID orderId){
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("order not found"));
+        if(order.getStatus().equals(OrderStatus.DELIVERED)){
+            throw new OrderCancelledException("cannot deliver an order that already has been cancelled");
+        }
+        if(order.getStatus().equals(OrderStatus.CANCELED)){
+            throw new OrderCancelledException("cannot deliver an order that already has been delivered");
+        }
+        if(order.getStatus().equals(OrderStatus.PAID)){
+            throw new OrderPaidException("cannot deliver an order that has only been paid");
+        }
+        order.setStatus(OrderStatus.DELIVERED);
+        return orderRepository.save(order);
     }
 
 }
