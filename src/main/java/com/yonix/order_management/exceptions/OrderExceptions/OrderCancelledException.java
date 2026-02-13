@@ -1,7 +1,7 @@
 package com.yonix.order_management.exceptions.OrderExceptions;
 
-public class OrderCancelledException extends RuntimeException
-{
+public class OrderCancelledException extends OrderStatusException {
+
     public OrderCancelledException(String message)
     {
         super(message);

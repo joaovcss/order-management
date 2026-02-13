@@ -1,6 +1,6 @@
 package com.yonix.order_management.exceptions.OrderExceptions;
 
-public class OrderPaidException extends RuntimeException{
+public class OrderPaidException extends OrderStatusException{
     public OrderPaidException(){
         super("The order is paid, cannot do this action!");
     }
