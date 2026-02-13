@@ -4,6 +4,10 @@ import com.yonix.order_management.dto.mapper.OrderMapper;
 import com.yonix.order_management.dto.request.OrderItemRequest;
 import com.yonix.order_management.dto.response.OrderResponse;
 import com.yonix.order_management.entity.*;
+import com.yonix.order_management.exceptions.OrderExceptions.OrderCancelledException;
+import com.yonix.order_management.exceptions.OrderExceptions.OrderDeliveredException;
+import com.yonix.order_management.exceptions.OrderExceptions.OrderPaidException;
+import com.yonix.order_management.exceptions.OrderExceptions.OrderShippedException;
 import com.yonix.order_management.repository.OrderRepository;
 import com.yonix.order_management.repository.ProductRepository;
 import com.yonix.order_management.repository.UserRepository;
@@ -104,6 +108,25 @@ public class OrderService {
             product.setStock(product.getStock() + quantity);
         });
         return orderRepository.save(order);
+    }
+
+    public Order payOrder(UUID orderId){
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("order not found"));
+        if(order.getStatus().equals(OrderStatus.CANCELED)){
+            throw new OrderCancelledException("cannot pay an order that already has been cancelled");
+        }
+        if(order.getStatus().equals(OrderStatus.PAID)){
+            throw new OrderPaidException("cannot pay an order that already has been paid");
+        }
+        if(order.getStatus().equals(OrderStatus.SHIPPED)){
+            throw new OrderShippedException("cannot pay an order that already has been shipped");
+        }
+        if(order.getStatus().equals(OrderStatus.DELIVERED)){
+            throw new OrderDeliveredException("cannot pay an order that already has been delivered");
+        }
+        order.setStatus(OrderStatus.PAID);
+        return order;
     }
 
 }

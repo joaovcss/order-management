@@ -47,4 +47,10 @@ public class OrderController {
         Order order = orderService.cancelOrder(orderId);
         return ResponseEntity.ok(OrderMapper.toResponse(order));
     }
+
+    @PatchMapping("/pay/{orderId}")
+    public ResponseEntity<OrderResponse> payOrder(@PathVariable UUID orderId){
+        Order order = orderService.payOrder(orderId);
+        return ResponseEntity.ok(OrderMapper.toResponse(order));
+    }
 }
