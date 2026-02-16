@@ -110,6 +110,7 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
+    @Transactional
     public Order payOrder(UUID orderId){
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("order not found"));
@@ -129,6 +130,7 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
+    @Transactional
     public Order sendOrder(UUID orderId){
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("order not found"));
@@ -145,6 +147,7 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
+    @Transactional
     public Order deliverOrder(UUID orderId){
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("order not found"));
