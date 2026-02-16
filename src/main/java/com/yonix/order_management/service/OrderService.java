@@ -4,10 +4,8 @@ import com.yonix.order_management.dto.mapper.OrderMapper;
 import com.yonix.order_management.dto.request.OrderItemRequest;
 import com.yonix.order_management.dto.response.OrderResponse;
 import com.yonix.order_management.entity.*;
-import com.yonix.order_management.exceptions.OrderExceptions.OrderCancelledException;
-import com.yonix.order_management.exceptions.OrderExceptions.OrderDeliveredException;
-import com.yonix.order_management.exceptions.OrderExceptions.OrderPaidException;
-import com.yonix.order_management.exceptions.OrderExceptions.OrderShippedException;
+import com.yonix.order_management.exceptions.OrderExceptions.*;
+import com.yonix.order_management.exceptions.UserExceptions.UserNotFoundException;
 import com.yonix.order_management.repository.OrderRepository;
 import com.yonix.order_management.repository.ProductRepository;
 import com.yonix.order_management.repository.UserRepository;
@@ -40,13 +38,13 @@ public class OrderService {
 
     public Order findById(UUID id){
         return orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("order not found"));
+                .orElseThrow(OrderNotFoundException::new);
     }
 
     @Transactional
     public Order createOrder(UUID userId, List<OrderItemRequest> items){
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("user not found"));
+                .orElseThrow(UserNotFoundException::new);
 
         Order order = new Order();
         order.setUser(user);
@@ -59,7 +57,7 @@ public class OrderService {
             Integer quantity = item.quantity();
 
             Product product = productRepository.findById(productId)
-                    .orElseThrow(() -> new RuntimeException("product not found"));
+                    .orElseThrow(OrderNotFoundException::new);
 
             if(product.getStock() < quantity){
                 throw new RuntimeException("insufficient stock");
@@ -85,22 +83,8 @@ public class OrderService {
     @Transactional
     public Order cancelOrder(UUID orderId){
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("order not found"));
-
-        if(order.getStatus().equals(OrderStatus.SHIPPED)){
-            throw new OrderShippedException("cannot cancel an order that already has been shipped");
-        }
-        if(order.getStatus().equals(OrderStatus.CANCELED)){
-            throw new OrderCancelledException("cannot cancel an order that already has been cancelled");
-        }
-        if(order.getStatus().equals(OrderStatus.PAID)){
-            throw new OrderPaidException("cannot cancel an order that already has been paid");
-        }
-        if(order.getStatus().equals(OrderStatus.DELIVERED)){
-            throw new OrderDeliveredException("cannot cancel an order that already has been delivered");
-        }
-
-        order.setStatus(OrderStatus.CANCELED);
+                .orElseThrow(OrderNotFoundException::new);
+        order.cancel();
         order.getItems().forEach(item -> {
             Product product = item.getProduct();
             Integer quantity = item.getQuantity();
@@ -113,55 +97,24 @@ public class OrderService {
     @Transactional
     public Order payOrder(UUID orderId){
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("order not found"));
-        if(order.getStatus().equals(OrderStatus.CANCELED)){
-            throw new OrderCancelledException("cannot pay an order that already has been cancelled");
-        }
-        if(order.getStatus().equals(OrderStatus.PAID)){
-            throw new OrderPaidException("cannot pay an order that already has been paid");
-        }
-        if(order.getStatus().equals(OrderStatus.SHIPPED)){
-            throw new OrderShippedException("cannot pay an order that already has been shipped");
-        }
-        if(order.getStatus().equals(OrderStatus.DELIVERED)){
-            throw new OrderDeliveredException("cannot pay an order that already has been delivered");
-        }
-        order.setStatus(OrderStatus.PAID);
+                .orElseThrow(OrderNotFoundException::new);
+        order.pay();
         return orderRepository.save(order);
     }
 
     @Transactional
     public Order sendOrder(UUID orderId){
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("order not found"));
-        if(order.getStatus().equals(OrderStatus.CANCELED)){
-            throw new OrderCancelledException("cannot send an order that already has been cancelled");
-        }
-        if(order.getStatus().equals(OrderStatus.SHIPPED)){
-            throw new OrderShippedException("cannot send an order that already has been shipped");
-        }
-        if(order.getStatus().equals(OrderStatus.DELIVERED)){
-            throw new OrderDeliveredException("cannot send an order that already has been delivered");
-        }
-        order.setStatus(OrderStatus.SHIPPED);
+                .orElseThrow(OrderNotFoundException::new);
+        order.send();
         return orderRepository.save(order);
     }
 
     @Transactional
     public Order deliverOrder(UUID orderId){
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("order not found"));
-        if(order.getStatus().equals(OrderStatus.DELIVERED)){
-            throw new OrderCancelledException("cannot deliver an order that already has been cancelled");
-        }
-        if(order.getStatus().equals(OrderStatus.CANCELED)){
-            throw new OrderCancelledException("cannot deliver an order that already has been delivered");
-        }
-        if(order.getStatus().equals(OrderStatus.PAID)){
-            throw new OrderPaidException("cannot deliver an order that has only been paid");
-        }
-        order.setStatus(OrderStatus.DELIVERED);
+                .orElseThrow(OrderNotFoundException::new);
+        order.deliver();
         return orderRepository.save(order);
     }
-
 }
