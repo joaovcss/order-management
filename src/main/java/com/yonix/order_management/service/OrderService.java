@@ -46,37 +46,20 @@ public class OrderService {
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
 
-        Order order = new Order();
-        order.setUser(user);
-        order.setStatus(OrderStatus.CREATED);
+        Order order = Order.create(user);
         List<OrderItem> orderItems = new ArrayList<>();
         BigDecimal totalPrice = BigDecimal.ZERO;
 
-        for (OrderItemRequest item : items) {
+        for(OrderItemRequest item : items){
             UUID productId = item.productId();
             Integer quantity = item.quantity();
 
             Product product = productRepository.findById(productId)
                     .orElseThrow(OrderNotFoundException::new);
 
-            if(product.getStock() < quantity){
-                throw new RuntimeException("insufficient stock");
-            }
-            product.setStock(product.getStock() - quantity);
-
-            OrderItem orderItem = new OrderItem();
-            orderItem.setOrder(order);
-            orderItem.setProduct(product);
-            orderItem.setQuantity(quantity);
-            orderItem.setUnitPrice(product.getPrice());
-
-            BigDecimal itemTotal = product.getPrice()
-                            .multiply(BigDecimal.valueOf(quantity));
-            totalPrice = totalPrice.add(itemTotal);
-
-            orderItems.add(orderItem);
-        };
-        order.setItems(orderItems);
+            order.addItem(product, quantity);
+        }
+        order.setTotal(totalPrice);
         return orderRepository.save(order);
     }
 
