@@ -5,6 +5,7 @@ import com.yonix.order_management.dto.request.OrderItemRequest;
 import com.yonix.order_management.dto.response.OrderResponse;
 import com.yonix.order_management.entity.*;
 import com.yonix.order_management.exceptions.OrderExceptions.*;
+import com.yonix.order_management.exceptions.ProductExceptions.ProductNotFoundException;
 import com.yonix.order_management.exceptions.UserExceptions.UserNotFoundException;
 import com.yonix.order_management.repository.OrderRepository;
 import com.yonix.order_management.repository.ProductRepository;
@@ -47,19 +48,16 @@ public class OrderService {
                 .orElseThrow(UserNotFoundException::new);
 
         Order order = Order.create(user);
-        List<OrderItem> orderItems = new ArrayList<>();
-        BigDecimal totalPrice = BigDecimal.ZERO;
 
         for(OrderItemRequest item : items){
             UUID productId = item.productId();
             Integer quantity = item.quantity();
 
             Product product = productRepository.findById(productId)
-                    .orElseThrow(OrderNotFoundException::new);
+                    .orElseThrow(ProductNotFoundException::new);
 
             order.addItem(product, quantity);
         }
-        order.setTotal(totalPrice);
         return orderRepository.save(order);
     }
 
