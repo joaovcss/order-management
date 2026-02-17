@@ -1,5 +1,6 @@
 package com.yonix.order_management.entity;
 
+import com.yonix.order_management.exceptions.ProductExceptions.InsufficientStockException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -30,4 +31,11 @@ public class Product {
     private BigDecimal price;
 
     private Integer stock;
+
+    public void decreaseStock(int quantity) {
+        if(this.stock < quantity) {
+            throw new InsufficientStockException();
+        }
+        this.stock -= quantity;
+    }
 }
