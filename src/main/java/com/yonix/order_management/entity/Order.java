@@ -117,5 +117,6 @@ public class Order {
         if(this.status == OrderStatus.PAID){
             throw new OrderPaidException("Cannot deliver an order that has only been paid");
         }
+        this.status = OrderStatus.DELIVERED;
     }
 }
