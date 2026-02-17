@@ -66,12 +66,6 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
         order.cancel();
-        order.getItems().forEach(item -> {
-            Product product = item.getProduct();
-            Integer quantity = item.getQuantity();
-
-            product.setStock(product.getStock() + quantity);
-        });
         return orderRepository.save(order);
     }
 

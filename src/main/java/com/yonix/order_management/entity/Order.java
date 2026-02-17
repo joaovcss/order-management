@@ -84,6 +84,13 @@ public class Order {
         if(this.status == OrderStatus.DELIVERED) {
             throw new OrderDeliveredException("Cannot cancel this order because the order is already delivered");
         }
+        for(OrderItem orderItem : this.items) {
+            this.getItems().forEach(item -> {
+                Product product = item.getProduct();
+                Integer quantity = item.getQuantity();
+                product.increaseStock(quantity);
+            });
+        }
         this.status = OrderStatus.CANCELED;
     }
 
