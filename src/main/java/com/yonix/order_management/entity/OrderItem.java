@@ -8,11 +8,18 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "order_items")
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public class OrderItem {
+
+    public OrderItem(Order order, Product product, Integer quantity, BigDecimal unitPrice) {
+        this.order = order;
+        this.product = product;
+        this.quantity = quantity;
+        this.unitPrice = unitPrice;
+    }
 
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -28,4 +35,12 @@ public class OrderItem {
     private Integer quantity;
 
     private BigDecimal unitPrice;
+
+    public static OrderItem create(Order order, Product product, Integer quantity, BigDecimal unitPrice) {
+        return new OrderItem(order, product, quantity, unitPrice);
+    }
+
+    public BigDecimal getTotal() {
+        return unitPrice.multiply(BigDecimal.valueOf(quantity));
+    }
 }
