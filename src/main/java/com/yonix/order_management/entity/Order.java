@@ -1,14 +1,12 @@
 package com.yonix.order_management.entity;
 
-import com.yonix.order_management.exceptions.OrderExceptions.OrderCancelledException;
-import com.yonix.order_management.exceptions.OrderExceptions.OrderDeliveredException;
-import com.yonix.order_management.exceptions.OrderExceptions.OrderPaidException;
-import com.yonix.order_management.exceptions.OrderExceptions.OrderShippedException;
+import com.yonix.order_management.exceptions.OrderExceptions.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,6 +33,27 @@ public class Order {
     private OrderStatus status;
 
     private BigDecimal total;
+
+    public static Order create(User user) {
+        Order order = new Order();
+        order.user = user;
+        order.status = OrderStatus.CREATED;
+        order.items = new ArrayList<>();
+        order.total = BigDecimal.ZERO;
+        return order;
+    }
+
+    public void addItem(Product product, int quantity) {
+        if(quantity <= 0){
+            throw new IllegalArgumentException("Quantity must be greater than 0");
+        }
+        product.decreaseStock(quantity);
+        OrderItem orderItem = new OrderItem(this, product, quantity, product.getPrice());
+
+        this.items.add(orderItem);
+
+        this.total = this.total.add(orderItem.getTotal());
+    }
 
     public void pay() {
         if(this.status == OrderStatus.CANCELED) {
