@@ -1,9 +1,12 @@
 package com.yonix.order_management.service;
 
+import com.yonix.order_management.dto.mapper.ProductMapper;
+import com.yonix.order_management.dto.response.ProductResponse;
 import com.yonix.order_management.entity.Product;
 import com.yonix.order_management.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,8 +18,13 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public List<Product> findAll(){
-        return productRepository.findAll();
+    public List<ProductResponse> findAll(){
+        List<Product> products = productRepository.findAll();
+        List<ProductResponse> productResponseList = new ArrayList<>();
+        for (Product product : products) {
+            productResponseList.add(ProductMapper.toProductResponse(product));
+        }
+        return productResponseList;
     }
 
     public Product findById(UUID id){
