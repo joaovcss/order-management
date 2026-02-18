@@ -1,6 +1,7 @@
 package com.yonix.order_management.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.yonix.order_management.dto.request.CreateUserRequest;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -28,4 +29,10 @@ public class User {
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<Order> orders;
+
+    public static User create(CreateUserRequest request) {
+        User user = new User();
+        user.name = request.name();
+        return user;
+    }
 }

@@ -1,5 +1,6 @@
 package com.yonix.order_management.controller;
 
+import com.yonix.order_management.dto.mapper.UserMapper;
 import com.yonix.order_management.dto.request.CreateUserRequest;
 import com.yonix.order_management.dto.response.UserResponse;
 import com.yonix.order_management.entity.User;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,21 +24,20 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> showAll(){
-        List<User> users = userService.findAll();
+    public ResponseEntity<List<UserResponse>> showAll(){
+        List<UserResponse> users = userService.findAll()
+                .stream()
+                .map(UserMapper::toUserResponse)
+                .toList();
         return ResponseEntity.ok(users);
     }
 
     @PostMapping
     public ResponseEntity<UserResponse> create(@RequestBody CreateUserRequest userData){
-        User user = new User(null, userData.name(), null);
-        User saved = userService.save(user);
-        UserResponse userResponse = new UserResponse(
-                saved.getId(),
-                saved.getName()
-        );
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(userResponse);
+        User user = userService.create(userData);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(UserMapper.toUserResponse(user));
     }
 
     @DeleteMapping("/{id}")
