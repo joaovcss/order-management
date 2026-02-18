@@ -1,6 +1,7 @@
 package com.yonix.order_management.service;
 
 import com.yonix.order_management.dto.mapper.ProductMapper;
+import com.yonix.order_management.dto.request.CreateProductRequest;
 import com.yonix.order_management.dto.response.ProductResponse;
 import com.yonix.order_management.entity.Product;
 import com.yonix.order_management.exceptions.ProductExceptions.ProductNotFoundException;
@@ -39,7 +40,8 @@ public class ProductService {
         return ProductMapper.toProductResponse(product);
     }
 
-    public Product createProduct(Product product){
+    public Product createProduct(CreateProductRequest request){
+        Product product = Product.create(request);
         return productRepository.save(product);
     }
 

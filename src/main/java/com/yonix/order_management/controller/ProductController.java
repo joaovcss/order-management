@@ -1,5 +1,6 @@
 package com.yonix.order_management.controller;
 
+import com.yonix.order_management.dto.mapper.ProductMapper;
 import com.yonix.order_management.dto.request.CreateProductRequest;
 import com.yonix.order_management.dto.response.ProductResponse;
 import com.yonix.order_management.entity.Product;
@@ -35,16 +36,10 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<ProductResponse> create(@RequestBody CreateProductRequest request){
-        Product product = new Product(null, request.name(), request.description(), request.price(), request.stock());
-        Product newProduct = productService.createProduct(product);
-        ProductResponse productResponse = new ProductResponse(
-                newProduct.getId(),
-                newProduct.getName(),
-                newProduct.getDescription(),
-                newProduct.getPrice()
-        );
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(productResponse);
+        Product product = productService.createProduct(request);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ProductMapper.toProductResponse(product));
     }
 
     @DeleteMapping("/{id}")

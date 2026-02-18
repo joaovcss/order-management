@@ -1,5 +1,6 @@
 package com.yonix.order_management.entity;
 
+import com.yonix.order_management.dto.request.CreateProductRequest;
 import com.yonix.order_management.exceptions.ProductExceptions.InsufficientStockException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -31,6 +32,15 @@ public class Product {
     private BigDecimal price;
 
     private Integer stock;
+
+    public static Product create(CreateProductRequest request) {
+        Product product = new Product();
+        product.name = request.name();
+        product.description = request.description();
+        product.price = request.price();
+        product.stock = request.stock();
+        return product;
+    }
 
     public void decreaseStock(int quantity) {
         if(this.stock < quantity) {
