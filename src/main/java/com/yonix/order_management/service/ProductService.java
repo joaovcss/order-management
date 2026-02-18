@@ -32,7 +32,11 @@ public class ProductService {
     }
 
     public ProductResponse findById(UUID id){
-
+        Product product = productRepository.findById(id).orElse(null);
+        if(product == null){
+            throw new ProductNotFoundException("product not found");
+        }
+        return ProductMapper.toProductResponse(product);
     }
 
     public Product createProduct(Product product){

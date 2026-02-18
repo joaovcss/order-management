@@ -28,8 +28,8 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> findById(@PathVariable UUID id){
-        Product product = productService.findById(id);
+    public ResponseEntity<ProductResponse> findById(@PathVariable UUID id){
+        ProductResponse product = productService.findById(id);
         return ResponseEntity.ok(product);
     }
 
