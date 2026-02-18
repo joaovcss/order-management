@@ -3,6 +3,7 @@ package com.yonix.order_management.service;
 import com.yonix.order_management.dto.mapper.ProductMapper;
 import com.yonix.order_management.dto.response.ProductResponse;
 import com.yonix.order_management.entity.Product;
+import com.yonix.order_management.exceptions.ProductExceptions.ProductNotFoundException;
 import com.yonix.order_management.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,9 @@ public class ProductService {
 
     public List<ProductResponse> findAll(){
         List<Product> products = productRepository.findAll();
+        if(products.isEmpty()){
+            throw new ProductNotFoundException("there is no product registered");
+        }
         List<ProductResponse> productResponseList = new ArrayList<>();
         for (Product product : products) {
             productResponseList.add(ProductMapper.toProductResponse(product));
@@ -27,9 +31,8 @@ public class ProductService {
         return productResponseList;
     }
 
-    public Product findById(UUID id){
-        return productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("product not found"));
+    public ProductResponse findById(UUID id){
+
     }
 
     public Product createProduct(Product product){
