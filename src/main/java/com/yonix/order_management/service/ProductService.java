@@ -2,10 +2,12 @@ package com.yonix.order_management.service;
 
 import com.yonix.order_management.dto.mapper.ProductMapper;
 import com.yonix.order_management.dto.request.CreateProductRequest;
+import com.yonix.order_management.dto.request.UpdateProductRequest;
 import com.yonix.order_management.dto.response.ProductResponse;
 import com.yonix.order_management.entity.Product;
 import com.yonix.order_management.exceptions.ProductExceptions.ProductNotFoundException;
 import com.yonix.order_management.repository.ProductRepository;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -43,6 +45,13 @@ public class ProductService {
     public Product createProduct(CreateProductRequest request){
         Product product = Product.create(request);
         return productRepository.save(product);
+    }
+
+    public Product updateProduct(UUID productId, UpdateProductRequest request) {
+        Product product = productRepository.findById(productId).orElse(null);
+        Product productUpdated = Product.update(product, request);
+        productRepository.save(productUpdated);
+        return productUpdated;
     }
 
     public void delete(UUID id){
