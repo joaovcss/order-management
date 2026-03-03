@@ -43,6 +43,9 @@ public class User implements UserDetails {
     public static User create(CreateUserRequest request) {
         User user = new User();
         user.name = request.name();
+        user.login = request.login();
+        user.password = request.password();
+        user.role = UserRole.valueOf(request.role());
         return user;
     }
 
