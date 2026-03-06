@@ -8,6 +8,7 @@ import com.yonix.order_management.dto.response.LoginResponse;
 import com.yonix.order_management.dto.response.UserResponse;
 import com.yonix.order_management.entity.User;
 import com.yonix.order_management.repository.UserRepository;
+import com.yonix.order_management.service.AuthService;
 import com.yonix.order_management.service.TokenService;
 import com.yonix.order_management.service.UserService;
 import jakarta.validation.Valid;
@@ -25,25 +26,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final TokenService tokenService;
-    private AuthenticationManager authenticationManager;
     private UserService userService;
     private UserRepository userRepository;
+    private final AuthService authService;
 
-    public AuthController(AuthenticationManager authenticationManager, UserService userService, UserRepository userRepository, TokenService tokenService) {
+    public AuthController(UserService userService, UserRepository userRepository, AuthService authService) {
         this.userRepository = userRepository;
         this.userService = userService;
-        this.authenticationManager = authenticationManager;
-        this.tokenService = tokenService;
+        this.authService = authService;
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody @Valid LoginRequest data){
-        var usernamePassword = new UsernamePasswordAuthenticationToken(data.login(), data.password());
-        var auth = this.authenticationManager.authenticate(usernamePassword);
-
-        var token = tokenService.generateToken((User) auth.getPrincipal());
-
+    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest data){
+        var token = authService.login(data);
         return ResponseEntity.ok(new LoginResponse(token));
     }
 
