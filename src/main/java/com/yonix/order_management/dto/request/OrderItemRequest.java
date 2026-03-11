@@ -1,5 +1,8 @@
 package com.yonix.order_management.dto.request;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
 import java.util.UUID;
 
-public record OrderItemRequest (UUID productId, Integer quantity){}
+public record OrderItemRequest (@NotNull UUID productId, @NotNull @Positive Integer quantity){}

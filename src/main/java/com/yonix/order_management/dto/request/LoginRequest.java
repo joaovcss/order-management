@@ -1,4 +1,7 @@
 package com.yonix.order_management.dto.request;
 
-public record LoginRequest(String login, String password) {
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+public record LoginRequest(@NotNull @NotBlank String login, @NotNull @NotBlank String password) {
 }
