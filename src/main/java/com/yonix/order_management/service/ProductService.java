@@ -48,7 +48,8 @@ public class ProductService {
     }
 
     public Product updateProduct(UUID productId, UpdateProductRequest request) {
-        Product product = productRepository.findById(productId).orElse(null);
+        Product product = productRepository.findById(productId).
+                orElseThrow(ProductNotFoundException::new);
         Product productUpdated = Product.update(product, request);
         productRepository.save(productUpdated);
         return productUpdated;
@@ -56,7 +57,7 @@ public class ProductService {
 
     public void delete(UUID id){
         if(productRepository.findById(id).isEmpty()){
-            throw new RuntimeException("product not found");
+            throw new ProductNotFoundException();
         }
         productRepository.deleteById(id);
     }
