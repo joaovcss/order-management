@@ -5,11 +5,11 @@ import com.yonix.order_management.dto.request.CreateUserRequest;
 import com.yonix.order_management.dto.response.UserResponse;
 import com.yonix.order_management.entity.User;
 import com.yonix.order_management.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponse> create(@RequestBody CreateUserRequest userData){
+    public ResponseEntity<UserResponse> create(@RequestBody @Valid CreateUserRequest userData){
         User user = userService.create(userData);
         return ResponseEntity
                 .status(HttpStatus.CREATED)

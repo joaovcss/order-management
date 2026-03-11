@@ -5,11 +5,11 @@ import com.yonix.order_management.dto.request.CreateOrderRequest;
 import com.yonix.order_management.dto.response.OrderResponse;
 import com.yonix.order_management.entity.Order;
 import com.yonix.order_management.service.OrderService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,7 +36,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<OrderResponse> create(@RequestBody CreateOrderRequest request){
+    public ResponseEntity<OrderResponse> create(@RequestBody @Valid CreateOrderRequest request){
         Order saved = orderService.createOrder(request.userId(), request.items());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(OrderMapper.toResponse(saved));

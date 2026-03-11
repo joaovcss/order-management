@@ -6,6 +6,7 @@ import com.yonix.order_management.dto.request.UpdateProductRequest;
 import com.yonix.order_management.dto.response.ProductResponse;
 import com.yonix.order_management.entity.Product;
 import com.yonix.order_management.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +37,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponse> create(@RequestBody CreateProductRequest request){
+    public ResponseEntity<ProductResponse> create(@RequestBody @Valid CreateProductRequest request){
         Product product = productService.createProduct(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -44,7 +45,7 @@ public class ProductController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ProductResponse> update(@PathVariable UUID id, @RequestBody UpdateProductRequest request){
+    public ResponseEntity<ProductResponse> update(@PathVariable UUID id, @RequestBody @Valid UpdateProductRequest request){
         Product product = productService.updateProduct(id, request);
         return ResponseEntity.ok(ProductMapper.toProductResponse(product));
     }
