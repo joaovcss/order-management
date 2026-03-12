@@ -45,7 +45,7 @@ public class User implements UserDetails {
         user.name = request.name();
         user.login = request.login();
         user.password = request.password();
-        user.role = UserRole.valueOf(request.role());
+        user.role = UserRole.USER;
         return user;
     }
 
