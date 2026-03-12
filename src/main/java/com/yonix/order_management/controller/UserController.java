@@ -32,14 +32,6 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    @PostMapping
-    public ResponseEntity<UserResponse> create(@RequestBody @Valid CreateUserRequest userData){
-        User user = userService.create(userData);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(UserMapper.toUserResponse(user));
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id){
         userService.delete(id);
