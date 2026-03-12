@@ -40,6 +40,6 @@ public class AuthService {
             throw new IllegalArgumentException("User with this login already exists");
         }
         String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
-        return userService.create(new CreateUserRequest(data.name(), data.login(), encryptedPassword, data.role()));
+        return userService.create(new CreateUserRequest(data.name(), data.login(), encryptedPassword));
     }
 }
