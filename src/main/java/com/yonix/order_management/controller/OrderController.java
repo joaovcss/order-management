@@ -30,9 +30,9 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Order> findById(@PathVariable UUID id){
+    public ResponseEntity<OrderResponse> findById(@PathVariable UUID id){
         Order order = orderService.findById(id);
-        return ResponseEntity.ok(order);
+        return ResponseEntity.ok(OrderMapper.toResponse(order));
     }
 
     @PostMapping
